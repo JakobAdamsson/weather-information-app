@@ -1,0 +1,53 @@
+# Ignore virtual environments
+venv/
+.env
+.venv/
+env/
+ENV/
+*.env
+
+# Node modules
+node_modules/
+
+# Dependency directories
+__pycache__/
+*.py[cod]
+
+# Byte-compiled and cache files
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+*.cache
+
+# Logs
+*.log
+*.out
+*.err
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python-specific files
+*.sqlite3
+*.db
+
+# Mac-specific files
+*.DS_Store
+
+# Build directories
+build/
+dist/
+
+# Coverage reports
+coverage/
+*.cover
+*.coverage
+htmlcov/

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: database-pv
+spec:
+  capacity:
+    storage: 1Gi  # Adjust size as needed
+  accessModes:
+    - ReadWriteOnce  # Only one pod can use it at a time
+  hostPath:
+    path: /home/jofry/WEATHERAPP/weatherapp/databases  # Replace with the absolute path of the 'databases' folder in your working dir
