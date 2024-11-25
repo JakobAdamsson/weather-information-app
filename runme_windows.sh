@@ -16,7 +16,7 @@ fi
 IMAGE_NAME_FRONTEND="weather-app-frontend"
 IMAGE_NAME_WEATHER_SERVICE="weather-service"
 IMAGE_NAME_AUTH_SERVICE="auth-service"
-REGISTRY="pellefra"
+REGISTRY="silverland513"
 
 declare -A IMAGES=(
     [frontend]=$IMAGE_NAME_FRONTEND
@@ -36,7 +36,7 @@ for SERVICE in "${!IMAGES[@]}"; do
     fi
 done
 
-# Kubernetes directory
+
 KUBERNETES_DIR="kubernetes"
 
 if [ ! -d "$KUBERNETES_DIR" ]; then
@@ -46,7 +46,7 @@ fi
 
 cd "$KUBERNETES_DIR"
 
-# Apply Kubernetes configurations
+
 echo "Applying Kubernetes configurations..."
 if kubectl apply -f .; then
     echo "✔ Kubernetes configurations applied successfully."
@@ -55,7 +55,7 @@ else
     exit 1
 fi
 
-# Verify deployments
+
 echo "Verifying Kubernetes deployments..."
 kubectl get deployments || {
     echo "✖ Failed to retrieve deployments."
@@ -73,14 +73,14 @@ for DEPLOYMENT in "${DEPLOYMENTS[@]}"; do
     fi
 done
 
-# Check pod statuses
+
 echo "Checking the status of pods..."
 kubectl get pods || {
     echo "✖ Failed to retrieve pod statuses."
     exit 1
 }
 
-# Check services
+
 echo "Current services running in the cluster:"
 kubectl get svc || {
     echo "✖ Failed to retrieve service details."

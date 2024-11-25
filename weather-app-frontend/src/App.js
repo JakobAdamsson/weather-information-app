@@ -195,6 +195,10 @@ const WeatherApp = () => {
         } else if (status === 401) {
           alert("Password or email wrong.");
         }
+        else if (body["status"] === "!OK") {
+          alert("No account found with that information.");
+        }
+        
       })
       .catch(error => console.error('Error:', error));
   };

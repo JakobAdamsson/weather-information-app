@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: weather-app-frontend
-          image: pellefra/weather-app-frontend:latest
+          image: silverland513/weather-app-frontend:latest
           ports:
             - containerPort: 80
 ---

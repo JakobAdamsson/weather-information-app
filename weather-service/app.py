@@ -12,8 +12,6 @@ app = Flask(__name__)
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-API_KEY = '840de94484afaa3c33ae25f4c6ca2bbc' 
-
 from routes import init_routes
 init_routes(app)
 

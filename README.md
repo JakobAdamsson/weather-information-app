@@ -49,3 +49,4 @@ If the "EXTERNAL_IP" is stuck on pending you may have to run:
 ```bash
 minikube tunnel
 ```
+You also need to modify the host path in persistent-volume.yml file to where the db is locally(the absolute path.)

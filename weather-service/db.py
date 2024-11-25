@@ -31,9 +31,9 @@ def create_weather_table():
     """Create the weather_data table in the database."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Drop the existing table if it exists
+
     cursor.execute("DROP TABLE IF EXISTS weather_data")
-    # Recreate the table with the correct schema
+
     create_table_query = """
     CREATE TABLE IF NOT EXISTS weather_data (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

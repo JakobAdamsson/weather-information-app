@@ -6,14 +6,12 @@ import requests
 from auth import *
 import os
 
-# Define the directory for the database
+
 DATABASE_DIR = '/app/databases'
 
-# Ensure the `databases` folder exists
 if not os.path.exists(DATABASE_DIR):
     os.makedirs(DATABASE_DIR)
 
-# Define the database file path
 DATABASE_FILE = os.path.join(DATABASE_DIR, 'user_database.db')
 
 print(f"Database will be stored at: {DATABASE_FILE}")

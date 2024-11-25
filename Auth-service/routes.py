@@ -17,7 +17,9 @@ def init_routes(app):
         if not data.get("email") or not data.get("password"):
             return jsonify({"message": "Not valid email or password"}), 400
 
+        print(f"Password before hashing: {data['password']}", flush=True)
         hashed_password = hash_password(data["password"])
+        print(f"Password after hashing: {hashed_password}", flush=True)
         user_email = data["email"]
         username = data["username"]
 
@@ -49,12 +51,13 @@ def init_routes(app):
         if user:
             username = user[2]
             u_id = get_user_id_from_email(user_email)
-            token = generate_token(u_id)  # Generate token with user email
+            token = generate_token(u_id)
+            print(f"Usertoken for this session: {token}", flush=True)
             if isinstance(token, bytes):
                 token = token.decode('utf-8')
             return jsonify({"message": f"Welcome back, {username}!", "token": token, "username": username}), 200
         else:
-            return jsonify({"message": "User not found"}), 404
+            return jsonify({"message": "User not found", "status": "!OK"}), 404
 
     
     @app.route('/update_data', methods=['POST'])

@@ -14,16 +14,16 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: pellefra/auth-service:latest
+          image: silverland513/auth-service:latest
           ports:
             - containerPort: 5000
           volumeMounts:
-            - name: shared-db-storage
-              mountPath: /app/databases 
+            - name: database-storage
+              mountPath: /app/databases
       volumes:
-        - name: shared-db-storage
+        - name: database-storage
           persistentVolumeClaim:
-            claimName: db-pvc 
+            claimName: database-pvc
 ---
 apiVersion: v1
 kind: Service
