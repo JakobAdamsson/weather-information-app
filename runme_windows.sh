@@ -1,99 +1,91 @@
+#!/bin/bash
+sed -i 's/\r$//' runme_windows.sh
 
-$ErrorActionPreference = "Stop"
+set -e
 
-
-function CommandExists {
-    param (
-        [string]$Command
-    )
-    $null -ne (Get-Command $Command -ErrorAction SilentlyContinue)
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
 }
-
-if (!(CommandExists "docker") -or !(CommandExists "kubectl")) {
-    Write-Error "Error: Docker and/or Kubernetes CLI (kubectl) not found."
-    Write-Error "Please install them before running this script."
+if ! command_exists docker || ! command_exists kubectl; then
+    echo "Error: Docker and/or Kubernetes CLI (kubectl) not found."
+    echo "Please install them before running this script."
     exit 1
-}
+fi
 
 
-$ImageNameFrontend = "weather-app-frontend"
-$ImageNameWeatherService = "weather-service"
-$ImageNameAuthService = "auth-service"
-$Registry = "pellefra"  
+IMAGE_NAME_FRONTEND="weather-app-frontend"
+IMAGE_NAME_WEATHER_SERVICE="weather-service"
+IMAGE_NAME_AUTH_SERVICE="auth-service"
+REGISTRY="pellefra"
 
+declare -A IMAGES=(
+    [frontend]=$IMAGE_NAME_FRONTEND
+    [weather-service]=$IMAGE_NAME_WEATHER_SERVICE
+    [auth-service]=$IMAGE_NAME_AUTH_SERVICE
+)
 
-$Images = @{
-    "frontend" = $ImageNameFrontend
-    "weather-service" = $ImageNameWeatherService
-    "auth-service" = $ImageNameAuthService
-}
-
-foreach ($Service in $Images.Keys) {
-    $Image = $Images[$Service]
-    Write-Host "Pulling $Service Docker image ($Registry/$Image)..."
-    try {
-        docker pull "$Registry/$Image"
-        Write-Host "✔ Successfully pulled $Service image."
-    } catch {
-        Write-Error "✖ Failed to pull $Service image. Please verify the registry and image name."
+# Pull images
+for SERVICE in "${!IMAGES[@]}"; do
+    IMAGE="${IMAGES[$SERVICE]}"
+    echo "Pulling $SERVICE Docker image ($REGISTRY/$IMAGE)..."
+    if docker pull "$REGISTRY/$IMAGE"; then
+        echo "✔ Successfully pulled $SERVICE image."
+    else
+        echo "✖ Failed to pull $SERVICE image. Please verify the registry and image name."
         exit 1
-    }
-}
+    fi
+done
 
-$KubernetesDir = "kubernetes"
+# Kubernetes directory
+KUBERNETES_DIR="kubernetes"
 
-if (-Not (Test-Path $KubernetesDir)) {
-    Write-Error "Error: Kubernetes directory '$KubernetesDir' does not exist."
+if [ ! -d "$KUBERNETES_DIR" ]; then
+    echo "Error: Kubernetes directory '$KUBERNETES_DIR' does not exist."
+    exit 1
+fi
+
+cd "$KUBERNETES_DIR"
+
+# Apply Kubernetes configurations
+echo "Applying Kubernetes configurations..."
+if kubectl apply -f .; then
+    echo "✔ Kubernetes configurations applied successfully."
+else
+    echo "✖ Failed to apply Kubernetes configurations."
+    exit 1
+fi
+
+# Verify deployments
+echo "Verifying Kubernetes deployments..."
+kubectl get deployments || {
+    echo "✖ Failed to retrieve deployments."
     exit 1
 }
 
-Set-Location -Path $KubernetesDir
+DEPLOYMENTS=("weather-app-frontend" "weather-service" "auth-service")
 
+for DEPLOYMENT in "${DEPLOYMENTS[@]}"; do
+    echo "Restarting deployment: $DEPLOYMENT"
+    if kubectl rollout restart deployment/"$DEPLOYMENT"; then
+        echo "✔ Rollout restart triggered for $DEPLOYMENT."
+    else
+        echo "⚠ Could not restart $DEPLOYMENT. It might not exist or rollout is not applicable."
+    fi
+done
 
-Write-Host "Applying Kubernetes configurations..."
-try {
-    kubectl apply -f .
-    Write-Host "✔ Kubernetes configurations applied successfully."
-} catch {
-    Write-Error "✖ Failed to apply Kubernetes configurations."
+# Check pod statuses
+echo "Checking the status of pods..."
+kubectl get pods || {
+    echo "✖ Failed to retrieve pod statuses."
     exit 1
 }
 
-Write-Host "Verifying Kubernetes deployments..."
-try {
-    kubectl get deployments
-} catch {
-    Write-Error "✖ Failed to retrieve deployments."
+# Check services
+echo "Current services running in the cluster:"
+kubectl get svc || {
+    echo "✖ Failed to retrieve service details."
     exit 1
 }
 
-$Deployments = @("weather-app-frontend", "weather-service", "auth-service")
-
-foreach ($Deployment in $Deployments) {
-    Write-Host "Restarting deployment: $Deployment"
-    try {
-        kubectl rollout restart deployment/$Deployment
-        Write-Host "✔ Rollout restart triggered for $Deployment."
-    } catch {
-        Write-Warning "⚠ Could not restart $Deployment. It might not exist or rollout is not applicable."
-    }
-}
-
-Write-Host "Checking the status of pods..."
-try {
-    kubectl get pods
-} catch {
-    Write-Error "✖ Failed to retrieve pod statuses."
-    exit 1
-}
-
-Write-Host "Current services running in the cluster:"
-try {
-    kubectl get svc
-} catch {
-    Write-Error "✖ Failed to retrieve service details."
-    exit 1
-}
-
-Write-Host "✅ Deployment process complete."
-Write-Host "You can access the frontend, weather service, and auth service through the listed services."
+echo "✅ Deployment process complete."
+echo "You can access the frontend, weather service, and auth service through the listed services."

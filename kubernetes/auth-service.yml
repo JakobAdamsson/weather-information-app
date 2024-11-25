@@ -19,11 +19,11 @@ spec:
             - containerPort: 5000
           volumeMounts:
             - name: shared-db-storage
-              mountPath: /app/databases  # Ensure this matches the path inside the container
+              mountPath: /app/databases 
       volumes:
         - name: shared-db-storage
           persistentVolumeClaim:
-            claimName: db-pvc  # Use the same PVC as weather-service
+            claimName: db-pvc 
 ---
 apiVersion: v1
 kind: Service

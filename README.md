@@ -34,6 +34,13 @@ chmod +x runme_windows.sh
 ./runme_windows.sh
 ```
 
+NOTE: If you run it on windows, and you get errors about EOF or \r etc, enter this:
+```
+sed -i 's/\r$//' runme_windows.sh
+```
+Then re-run ./runme_windows.sh or bash runme_windows
+
+
 ### 3. Done!
 The frontend should not be accessable by your webbrowser at: "localhost:80"
 

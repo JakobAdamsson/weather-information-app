@@ -4,8 +4,9 @@ metadata:
   name: database-pv
 spec:
   capacity:
-    storage: 1Gi  # Adjust size as needed
+    storage: 1Gi 
   accessModes:
-    - ReadWriteOnce  # Only one pod can use it at a time
+    - ReadWriteOnce 
   hostPath:
-    path: /home/jofry/WEATHERAPP/weatherapp/databases  # Replace with the absolute path of the 'databases' folder in your working dir
+    path: C:\Skola\weather-information-app\databases
+    
